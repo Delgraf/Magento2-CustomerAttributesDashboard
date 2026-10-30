@@ -1,0 +1,27 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  php-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.1', '8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: PHP syntax check
+        run: find . -type f \( -name '*.php' -o -name '*.phtml' \) -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+      - name: Validate composer.json
+        run: composer validate --no-check-publish --no-check-lock
+      - name: Validate XML
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libxml2-utils
+          find . -name '*.xml' -not -path './vendor/*' -print0 | xargs -0 -n1 xmllint --noout

@@ -1,0 +1,29 @@
+<?php
+/**
+ * Custom customer attributes shown in the "Contact Information" box.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Delgraf\CustomerAttributesDashboard\ViewModel\CustomerAttributes $viewModel
+ */
+$viewModel = $block->getData('view_model');
+if (!$viewModel || !$viewModel->hasRows()) {
+    return;
+}
+?>
+<dl class="delgraf-customer-attributes">
+    <?php foreach ($viewModel->getRows() as $row): ?>
+        <div class="delgraf-customer-attributes__item delgraf-customer-attributes__item--<?= $escaper->escapeHtmlAttr($row->getCode()) ?>">
+            <dt class="delgraf-customer-attributes__label"><?= $escaper->escapeHtml($row->getLabel()) ?>:</dt>
+            <dd class="delgraf-customer-attributes__value">
+                <?php if ($row->isLink()): ?>
+                    <a href="<?= $escaper->escapeUrl($row->getUrl()) ?>"><?= $escaper->escapeHtml(__('Download')) ?></a>
+                <?php elseif ($row->isMultiline()): ?>
+                    <?= nl2br($escaper->escapeHtml($row->getValue())) ?>
+                <?php else: ?>
+                    <?= $escaper->escapeHtml($row->getValue()) ?>
+                <?php endif; ?>
+            </dd>
+        </div>
+    <?php endforeach; ?>
+</dl>
