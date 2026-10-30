@@ -14,7 +14,10 @@ $title = (string)$block->getData('title');
 ?>
 <div class="delgraf-customer-attributes">
     <?php if ($title !== ''): ?>
-    <strong class="delgraf-customer-attributes__title"><?= $escaper->escapeHtml(__($title)) ?></strong>
+    <?php /* "box-title" reuses the theme style of "Contact Information" (same spacing and font). */ ?>
+    <strong class="box-title delgraf-customer-attributes__title">
+        <span><?= $escaper->escapeHtml(__($title)) ?></span>
+    </strong>
     <?php endif; ?>
     <dl class="delgraf-customer-attributes__list">
         <?php foreach ($viewModel->getRows() as $row): ?>
