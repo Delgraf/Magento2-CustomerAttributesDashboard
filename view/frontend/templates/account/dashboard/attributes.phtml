@@ -10,20 +10,26 @@ $viewModel = $block->getData('view_model');
 if (!$viewModel || !$viewModel->hasRows()) {
     return;
 }
+$title = (string)$block->getData('title');
 ?>
-<dl class="delgraf-customer-attributes">
-    <?php foreach ($viewModel->getRows() as $row): ?>
-        <div class="delgraf-customer-attributes__item delgraf-customer-attributes__item--<?= $escaper->escapeHtmlAttr($row->getCode()) ?>">
-            <dt class="delgraf-customer-attributes__label"><?= $escaper->escapeHtml($row->getLabel()) ?>:</dt>
-            <dd class="delgraf-customer-attributes__value">
-                <?php if ($row->isLink()): ?>
-                    <a href="<?= $escaper->escapeUrl($row->getUrl()) ?>"><?= $escaper->escapeHtml(__('Download')) ?></a>
-                <?php elseif ($row->isMultiline()): ?>
-                    <?= nl2br($escaper->escapeHtml($row->getValue())) ?>
-                <?php else: ?>
-                    <?= $escaper->escapeHtml($row->getValue()) ?>
-                <?php endif; ?>
-            </dd>
-        </div>
-    <?php endforeach; ?>
-</dl>
+<div class="delgraf-customer-attributes">
+    <?php if ($title !== ''): ?>
+    <strong class="delgraf-customer-attributes__title"><?= $escaper->escapeHtml(__($title)) ?></strong>
+    <?php endif; ?>
+    <dl class="delgraf-customer-attributes__list">
+        <?php foreach ($viewModel->getRows() as $row): ?>
+            <div class="delgraf-customer-attributes__item delgraf-customer-attributes__item--<?= $escaper->escapeHtmlAttr($row->getCode()) ?>">
+                <dt class="delgraf-customer-attributes__label"><?= $escaper->escapeHtml($row->getLabel()) ?>:</dt>
+                <dd class="delgraf-customer-attributes__value">
+                    <?php if ($row->isLink()): ?>
+                        <a href="<?= $escaper->escapeUrl($row->getUrl()) ?>"><?= $escaper->escapeHtml(__('Download')) ?></a>
+                    <?php elseif ($row->isMultiline()): ?>
+                        <?= nl2br($escaper->escapeHtml($row->getValue())) ?>
+                    <?php else: ?>
+                        <?= $escaper->escapeHtml($row->getValue()) ?>
+                    <?php endif; ?>
+                </dd>
+            </div>
+        <?php endforeach; ?>
+    </dl>
+</div>
