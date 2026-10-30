@@ -21,6 +21,9 @@ on the **My Account** dashboard (`/customer/account/`), inside the
   - textarea / multiline → line breaks preserved
   - file / image → *Download* link served by Amasty's protected controller (customers can only access their own files)
 - Empty values and *Static Text* attributes are skipped.
+- Honours Amasty **Attribute Relations**: a dependent attribute is shown only when its parent
+  attribute is visible and has the related option selected (same rules as the Amasty frontend form),
+  so stale values left over after changing the parent option are not displayed.
 - No core or Amasty files are overridden; no database changes.
 
 ## Requirements
@@ -86,6 +89,8 @@ The markup uses BEM classes that can be targeted from your theme:
 ```text
 Model/Data/AttributeRow.php                 Immutable value object for one displayed line
 Model/Formatter/AttributeValueFormatter.php Raw EAV value → readable AttributeRow
+Model/Relation/RelationProvider.php         Reads Amasty relations (parent option → dependent attribute)
+Model/Relation/DependencyResolver.php       Applies the relations to decide which attributes are visible
 ViewModel/CustomerAttributes.php            Loads, filters and sorts attributes for the template
 view/frontend/layout/customer_account_index.xml
 view/frontend/templates/account/dashboard/attributes.phtml
