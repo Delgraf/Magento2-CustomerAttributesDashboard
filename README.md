@@ -24,6 +24,7 @@ on the **My Account** dashboard (`/customer/account/`), inside the
 - Honours Amasty **Attribute Relations**: a dependent attribute is shown only when its parent
   attribute is visible and has the related option selected (same rules as the Amasty frontend form),
   so stale values left over after changing the parent option are not displayed.
+- Section title *Additional Settings* (translatable) above the attributes; change or hide it via layout (see *Customization*).
 - No core or Amasty files are overridden; no database changes.
 
 ## Requirements
@@ -78,10 +79,25 @@ The markup uses BEM classes that can be targeted from your theme:
 
 ```text
 .delgraf-customer-attributes
+.delgraf-customer-attributes__title
+.delgraf-customer-attributes__list
 .delgraf-customer-attributes__item
 .delgraf-customer-attributes__item--{attribute_code}
 .delgraf-customer-attributes__label
 .delgraf-customer-attributes__value
+```
+
+## Customization
+
+The section title is a layout argument. To change it (or hide it with an empty value)
+add `customer_account_index.xml` to your theme:
+
+```xml
+<referenceBlock name="delgraf.customer.dashboard.attributes">
+    <arguments>
+        <argument name="title" xsi:type="string" translate="true">My Preferences</argument>
+    </arguments>
+</referenceBlock>
 ```
 
 ## Architecture
