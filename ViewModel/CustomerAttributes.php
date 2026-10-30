@@ -5,6 +5,7 @@ namespace Delgraf\CustomerAttributesDashboard\ViewModel;
 
 use Delgraf\CustomerAttributesDashboard\Model\Data\AttributeRow;
 use Delgraf\CustomerAttributesDashboard\Model\Formatter\AttributeValueFormatter;
+use Delgraf\CustomerAttributesDashboard\Model\Relation\DependencyResolver;
 use Magento\Customer\Model\AttributeMetadataDataProvider;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
@@ -25,7 +26,8 @@ class CustomerAttributes implements ArgumentInterface
         private readonly CustomerSession $customerSession,
         private readonly AttributeMetadataDataProvider $attributeMetadataDataProvider,
         private readonly StoreManagerInterface $storeManager,
-        private readonly AttributeValueFormatter $formatter
+        private readonly AttributeValueFormatter $formatter,
+        private readonly DependencyResolver $dependencyResolver
     ) {
     }
 
@@ -53,17 +55,26 @@ class CustomerAttributes implements ArgumentInterface
         $storeId = (int)$this->storeManager->getStore()->getId();
 
         $attributes = $this->attributeMetadataDataProvider->loadAttributesCollection('customer', self::FORM_CODE);
-        $sorted = [];
+
+        // Pass 1: attributes rendered in the form, with their raw values (needed to evaluate relations).
+        $displayable = [];
+        $valuesById = [];
         foreach ($attributes as $attribute) {
             if (!$this->isDisplayable($attribute, $storeId)) {
                 continue;
             }
+            $attributeId = (int)$attribute->getId();
+            $displayable[$attributeId] = $attribute;
+            $valuesById[$attributeId] = $customer->getData($attribute->getAttributeCode());
+        }
+
+        // Pass 2: drop attributes hidden by Amasty relations, then format.
+        $visibleIds = $this->dependencyResolver->filterVisible($valuesById);
+        $sorted = [];
+        foreach ($visibleIds as $attributeId) {
+            $attribute = $displayable[$attributeId];
             $attribute->setStoreId($storeId);
-            $row = $this->formatter->format(
-                $attribute,
-                $customer->getData($attribute->getAttributeCode()),
-                $customerId
-            );
+            $row = $this->formatter->format($attribute, $valuesById[$attributeId], $customerId);
             if ($row !== null) {
                 $sorted[] = ['order' => (int)$attribute->getData('sorting_order'), 'row' => $row];
             }
